@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import EditCourseDialog from '../pages/EditCourseDialog';
 import { Grid, Typography, Card, CardContent, Button, Box } from '@mui/material';
+import { useNavigate } from 'react-router-dom';
 
 interface Course {
   courseId: string;
@@ -11,9 +11,8 @@ interface Course {
 
 const CourseList: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>([]);
-  const [selectedCourse, setSelectedCourse] = useState<Course | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-
+  
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchCourses();
@@ -27,14 +26,18 @@ const CourseList: React.FC = () => {
       }
       const data = await response.json();
       setCourses(data.courses);
+      localStorage.setItem('courses', JSON.stringify(data.courses));
+
     } catch (error) {
       console.error('Error fetching courses:', error);
     }
   };
 
   const handleCardClick = (course: Course) => {
-    setSelectedCourse(course);
-    setIsDialogOpen(true);
+    
+    localStorage.setItem('selectedCourse', JSON.stringify(course));
+
+    navigate(`/edit/${course.courseId}`); // Navigate to /edit/:courseId
   };
 
   return (
@@ -44,24 +47,19 @@ const CourseList: React.FC = () => {
       <Grid container justifyContent="center" spacing={2}>
         {courses.map((course, index) => (
           <Grid item key={index} xs={12} sm={6} md={4} style={{ display: 'flex', justifyContent: 'center' }}>
-            <EditCourseDialog
-              isOpen={isDialogOpen && selectedCourse?.courseId === course.courseId}
-              onClose={() => setIsDialogOpen(false)}
-              course={course}
-            />
             <Card
-             style={{
-              cursor: 'pointer',
-              background: 'linear-gradient(rgb(12 11 11), rgb(180 159 159))',
-              color: 'white',
-              borderRadius: '10px',
-              overflow: 'hidden',
-              display: 'flex',
-              flexDirection: 'column',
-              alignItems: 'center',
-              justifyContent: 'center',
-              textAlign: 'center',
-            }}
+              style={{
+                cursor: 'pointer',
+                background: 'linear-gradient(rgb(12 11 11), rgb(180 159 159))',
+                color: 'white',
+                borderRadius: '10px',
+                overflow: 'hidden',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                textAlign: 'center',
+              }}
             >
               <CardContent style={{ minHeight: '150px' }}>
                 <Typography variant="h6" style={{ marginBottom: '10px' }}>{course.courseId}</Typography>
@@ -80,6 +78,7 @@ const CourseList: React.FC = () => {
           </Grid>
         ))}
       </Grid>
+      
     </>
   );
 };
