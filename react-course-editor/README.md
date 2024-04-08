@@ -1,5 +1,7 @@
 # React + TypeScript + Vite
 
+
+# Deployed link of site is given below
 [Deployed App](https://6613cda7de4300007a0eae06--jocular-gingersnap-a2ef3c.netlify.app/)
 
 
